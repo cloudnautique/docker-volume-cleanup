@@ -46,7 +46,10 @@ def delete_volumes(no_op=False):
 
 def rm_volume_data(volume_data_path):
     print 'Removing Volume Data: ' + volume_data_path
-    shutil.rmtree(volume_data_path)
+    try:
+        shutil.rmtree(volume_data_path)
+    except OSError as e:
+        print("Error: {0} {1}".format(e.errno, e.strerror))
 
 def rm_volume_meta(volume_meta_path):
     print 'Removing Volume Metadata: ' + volume_meta_path

@@ -1,0 +1,6 @@
+/var/log/docker_volume_cleanup.log { 
+    missingok
+    rotate 2
+    compress
+    weekly
+}

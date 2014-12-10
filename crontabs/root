@@ -1,0 +1,1 @@
+*/15 * * * * /usr/local/bin/docker_volume_cleanup.py >> /var/log/docker_volume_cleanup.log 2>&1
