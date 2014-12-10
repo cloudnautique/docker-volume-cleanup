@@ -11,4 +11,4 @@ ADD crontabs/root /var/spool/cron/crontabs/root
 RUN touch /var/log/docker_volume_cleanup.log
 ADD logrotate.d/docker_cleanup /etc/logrotate.d/docker_cleanup
 
-CMD cron && tail -F /var/log/docker_volume_cleanup.log
+CMD cron -L 15 && tail -F /var/log/docker_volume_cleanup.log
