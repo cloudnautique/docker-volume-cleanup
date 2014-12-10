@@ -64,6 +64,8 @@ def rm_volume_data(volume_data_path):
         shutil.rmtree(volume_data_path)
     except OSError as e:
         logger.error("{0} {1}".format(e.errno, e.strerror))
+    except UnicodeDecodeError as e:
+        logger.error("{0} {1}".format(e.errno, e.strerror))
 
 
 def rm_volume_meta(volume_meta_path):
