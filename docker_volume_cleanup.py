@@ -7,6 +7,7 @@ import subprocess
 import re
 import argparse
 import logging
+import sys
 
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -20,14 +21,20 @@ def get_volumes(vol_dir):
         volumes = os.walk(os.path.join(vol_dir, '.')).next()[1]
     else:
         logger.error("Volume Directory: {0} does not exist".format(vol_dir))
-        volumes = []
+        volumes = {}
+
+    logger.debug("Volumes: {0}".format(', '.join(volumes)))
 
     return volumes
 
 
 def get_attached_container_volumes():
-    containers_info = json.loads(subprocess.check_output('docker ps -a -q --no-trunc | xargs docker inspect', shell=True))
+    containers_info = json.loads(
+        subprocess.check_output('docker ps -a -q --no-trunc | xargs docker inspect', shell=True))
     volumes = [v for container in containers_info for v in container.get('Volumes', []).values()]
+
+    logger.debug("Volumes: {0}".format(', '.join(volumes)))
+
     return volumes
 
 
@@ -51,7 +58,11 @@ def delete_volumes(no_op=False):
 
         if not no_op:
             logger.info('Deleting volume {0}'.format(volume))
-            rm_volume_data(volume_metadata['Path'])
+
+            # skip bind mounts...
+            if not volume_metadata['IsBindMount']:
+                rm_volume_data(volume_metadata['Path'])
+
             rm_volume_meta(os.path.join(volumesdir, volume))
 
         else:
@@ -61,11 +72,9 @@ def delete_volumes(no_op=False):
 def rm_volume_data(volume_data_path):
     logger.info('Removing Volume Data: {0}'.format(volume_data_path))
     try:
-        shutil.rmtree(volume_data_path)
-    except OSError as e:
-        logger.error("{0} {1}".format(e.errno, e.strerror))
-    except UnicodeDecodeError as e:
-        logger.error("{0}".format(e))
+        subprocess.check_call(["rm", "-rf", volume_data_path])
+    except:
+        logger.error("error while processing {0}".format(volume_data_path))
 
 
 def rm_volume_meta(volume_meta_path):
@@ -84,9 +93,10 @@ if __name__ == '__main__':
         if args.loglevel in allowed:
             logger.setLevel(args.loglevel)
         else:
-            logger.setLevel("DEBUG")
+            print("Invalid log setting {0} not in {1}".format(args.loglevel, ', '.join(allowed)))
+            sys.exit(1)
     else:
-        logger.setLevel("DEBUG")
+        logger.setLevel("INFO")
 
     if args.noop:
         delete_volumes(no_op=True)
