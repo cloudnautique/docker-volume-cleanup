@@ -21,7 +21,7 @@ def get_volumes(vol_dir):
         volumes = os.walk(os.path.join(vol_dir, '.')).next()[1]
     else:
         logger.error("Volume Directory: {0} does not exist".format(vol_dir))
-        volumes = {}
+        volumes = []
 
     logger.debug("Volumes: {0}".format(', '.join(volumes)))
 
@@ -31,7 +31,7 @@ def get_volumes(vol_dir):
 def get_attached_container_volumes():
     containers_info = json.loads(
         subprocess.check_output('docker ps -a -q --no-trunc | xargs docker inspect', shell=True))
-    volumes = [v for container in containers_info for v in container.get('Volumes', []).values()]
+    volumes = [v for container in containers_info for v in container.get('Volumes', {}).values()]
 
     logger.debug("Volumes: {0}".format(', '.join(volumes)))
 
