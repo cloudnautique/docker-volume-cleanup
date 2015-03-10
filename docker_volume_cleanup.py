@@ -29,11 +29,13 @@ def get_volumes(vol_dir):
 
 
 def get_attached_container_volumes():
-    containers_info = json.loads(
-        subprocess.check_output('docker ps -a -q --no-trunc | xargs docker inspect', shell=True))
-    volumes = [v for container in containers_info for v in container.get('Volumes', {}).values()]
+    volumes = []
+    inspect = subprocess.check_output('docker ps -a -q --no-trunc | xargs --no-run-if-empty docker inspect', shell=True)
 
-    logger.debug("Volumes: {0}".format(', '.join(volumes)))
+    if inspect.startswith("["):
+        containers_info = json.loads(inspect)
+        volumes = [v for container in containers_info for v in container.get('Volumes', {}).values()]
+        logger.debug("Volumes: {0}".format(', '.join(volumes)))
 
     return volumes
 
