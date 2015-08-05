@@ -1,3 +1,5 @@
+# Deprecated, Docker 1.7 changed the volume structure. Checkout rancher/sherdock if you want to clean out orphaned volumes.
+
 ## Clean up Orphaned Docker Volumes
 
 ### Overview
