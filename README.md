@@ -1,4 +1,4 @@
-# Deprecated, Docker 1.7 changed the volume structure. Checkout [rancher/sherdock](https://github.com/rancher/sherdock) if you want to clean out orphaned volumes.
+# Deprecated. Checkout [cloudnautique/vol-cleanup](https://github.com/cloudnautique/vol-cleanup) for smaller Go implementation or [rancher/sherdock](https://github.com/rancher/sherdock) for a more visual route.
 
 ## Clean up Orphaned Docker Volumes
 
